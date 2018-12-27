@@ -1,12 +1,12 @@
-#ifndef __FUTABA_S_SBUS_H__
-#define __FUTABA_S_SBUS_H__
+#ifndef __SBUS_H__
+#define __SBUS_H__
 
 #include <Arduino.h>
 
 #define SBUS_BAUD_RATE 100000
 
 #define CHANNELS        18
-#define BUFFER_LENGTH   25
+#define PACKET_LENGTH	25
 #define MAX_READ_ATTEMPTS       32
 
 struct channels {
@@ -61,7 +61,7 @@ public:
         void attachFailSafe(void (*callback)()) {
                 failsafe_callback = callback;
         }
-        void attachRawData(void (*callback)(uint8_t data[BUFFER_LENGTH])) {
+        void attachRawData(void (*callback)(uint8_t data[PACKET_LENGTH])) {
                 raw_data_callback = callback;
         }
         void detachPassThroughHandler() {
@@ -93,14 +93,14 @@ private:
         Stream *serial;
         ChannelData channels;
         uint32_t baud_rate;
-        uint8_t buffer[BUFFER_LENGTH];
+        uint8_t buffer[PACKET_LENGTH];
         bool pass_through;
         int offset;
         bool failsafe;
         bool frame_error;
         bool fast_decode;
         void (*data_received)(ChannelData data);
-        void (*raw_data_callback)(uint8_t data[BUFFER_LENGTH]);
+        void (*raw_data_callback)(uint8_t data[PACKET_LENGTH]);
         void (*frame_error_callback)();
         void (*failsafe_callback)();
         ChannelData (*passthrough_handler)(ChannelData data);

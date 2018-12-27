@@ -1,21 +1,15 @@
-#include "FutabaSBUS.h"
+#include "SBUS.h"
 
 
-FutabaSBUS::FutabaSBUS() : serial(NULL), baud_rate(SBUS_BAUD_RATE), pass_through(false), offset(0),
-                                                                                  failsafe(false), frame_error(false), fast_decode(true), data_received(NULL), raw_data_callback(NULL), 
-                                                                                  frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+FutabaSBUS::FutabaSBUS() : serial(NULL), baud_rate(SBUS_BAUD_RATE), pass_through(false), offset(0), failsafe(false), frame_error(false), fast_decode(true), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
 }
 
-FutabaSBUS::FutabaSBUS(HardwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0),
-                                                                                  failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), 
-                                                                                  frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+FutabaSBUS::FutabaSBUS(HardwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
         serialPort.begin(baud_rate, SERIAL_8E2);
 }
 
 #ifdef SoftwareSerial_h
-FutabaSBUS::FutabaSBUS(SoftwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0),
-                                                                                  failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), 
-                                                                                  frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+FutabaSBUS::FutabaSBUS(SoftwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
         serialPort.begin(baud_rate, SERIAL_8E2);
 }
 #endif
@@ -50,7 +44,8 @@ void FutabaSBUS::receive() {
         
         if (!serial) return;
 
-        while (serial->available() > 0 && offset < BUFFER_LENGTH && counter < MAX_READ_ATTEMPTS) {
+        while (serial->available() > 0 && offset < PACKET_LENGTH && counter < MAX_READ_ATTEMPTS) {
+				// If offset is more than packet length, skip reading and go right to decoding.
                 counter++;
                 data = serial->read();
                 
@@ -62,7 +57,7 @@ void FutabaSBUS::receive() {
         }
         
         // We have a full S-BUS packet, decode it
-        if (offset == BUFFER_LENGTH) {
+        if (offset == PACKET_LENGTH) {
                 if (raw_data_callback)
                         raw_data_callback(buffer);
 
@@ -86,7 +81,7 @@ void FutabaSBUS::receive() {
                 }
                 
                 // Reset data structures
-                for (uint8_t i = 0; i < BUFFER_LENGTH; i++) {
+                for (uint8_t i = 0; i < PACKET_LENGTH; i++) {
                         buffer[i] = 0;
                 }
                 offset = 0;
@@ -95,15 +90,14 @@ void FutabaSBUS::receive() {
 
 void FutabaSBUS::send() {
         if (!serial) return;
-        
-        for (uint8_t i = 0; i < BUFFER_LENGTH; i++)
+        for (uint8_t i = 0; i < PACKET_LENGTH; i++)
                 serial->write(buffer[i]);
 }
 
 bool FutabaSBUS::decode_sbus_data() {
         uint8_t byte_in_sbus = 1, bit_in_sbus = 0, ch = 0, bit_in_channel = 0;
         
-        if (buffer[0] != 0x0f || buffer[BUFFER_LENGTH - 1] != 0x00)
+        if (buffer[0] != 0x0f || buffer[PACKET_LENGTH - 1] != 0x00)
                 return false;
 		
         for (uint8_t i = 0; i < CHANNELS; i++) channels.data[i] = 0;
@@ -162,7 +156,7 @@ bool FutabaSBUS::decode_sbus_data() {
 void FutabaSBUS::updateChannels(ChannelData channels, bool frameError, bool failSafe) {
         uint8_t ch = 0, bit_in_servo = 0, byte_in_sbus = 1, bit_in_sbus = 0;
 
-	for (uint8_t i = 0; i < BUFFER_LENGTH; i++) buffer[i] = 0;
+	for (uint8_t i = 0; i < PACKET_LENGTH; i++) buffer[i] = 0;
 
         /* Start and end byte */
         buffer[0] = 0x0f;
