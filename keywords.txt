@@ -1,0 +1,27 @@
+######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+ArduinoSBUS	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+attachPassThroughHandler	KEYWORD2
+AttachDataReceived	KEYWORD2
+attachFramError	KEYWORD2
+attachFailSafe	KEYWORD2
+attachRawData	KEYWORD2
+detachPassThroughHandler	KEYWORD2
+detachDataReceived	KEYWORD2
+detachFramError	KEYWORD2
+detachFailSafe	KEYWORD2
+detachRawData	KEYWORD2
+receive	KEYWORD2
+send	KEYWORD2
+passThrough	KEYWORD2
+updateChannels	KEYWORD2
+failSafe	KEYWORD2
+getChannels	KEYWORD2

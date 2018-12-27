@@ -1,0 +1,22 @@
+{
+  "name": "Ardunio SBUS",
+  "description": "SBUS decoder and encoder. For hookup guide, see git repo",
+  "keywords": "sensor,accelerometer,i2c, SBUS",
+  "authors":
+  {
+    "name": "Monoxide13",
+    "email": "git@monoxide13.com"
+  },
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/monoxide13/Arduino_SBUS.git"
+  },
+  "version": "1.0.0",
+  "url": "https://github.com/monoxide13/Arduino_SBUS",
+  "frameworks": "arduino",
+  "platforms":
+  [
+    "atmelavr",
+  ]
+}
