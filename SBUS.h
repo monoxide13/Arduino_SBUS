@@ -35,14 +35,14 @@ typedef union {
         struct channels channels;
 } ChannelData;
 
-class FutabaSBUS {
+class ArduinoSBUS {
 public:
-        FutabaSBUS();
-        FutabaSBUS(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+        ArduinoSBUS();
+        ArduinoSBUS(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #ifdef SoftwareSerial_h
-        FutabaSBUS(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+        ArduinoSBUS(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #endif
-        ~FutabaSBUS() {}
+        ~ArduinoSBUS() {}
         
         void begin(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #ifdef SoftwareSerial_h
