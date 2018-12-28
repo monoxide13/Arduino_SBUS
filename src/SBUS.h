@@ -3,107 +3,110 @@
 
 #include <Arduino.h>
 
-#define SBUS_BAUD_RATE 100000
+#define SBUS_BAUD_RATE		100000
 
-#define CHANNELS        18
-#define PACKET_LENGTH	25
-#define MAX_READ_ATTEMPTS       32
+#define CHANNELS			18
+#define PACKET_LENGTH		25
+#define MAX_READ_ATTEMPTS	32
 
 struct channels {
-        int16_t channel1;
-        int16_t channel2;
-        int16_t channel3;
-        int16_t channel4;
-        int16_t channel5;
-        int16_t channel6;
-        int16_t channel7;
-        int16_t channel8;
-        int16_t channel9;
-        int16_t channel10;
-        int16_t channel11;
-        int16_t channel12;
-        int16_t channel13;
-        int16_t channel14;
-        int16_t channel15;
-        int16_t channel16;
-        int16_t channel17;
-        int16_t channel18;
+	int16_t channel1;
+	int16_t channel2;
+	int16_t channel3;
+	int16_t channel4;
+	int16_t channel5;
+	int16_t channel6;
+	int16_t channel7;
+	int16_t channel8;
+	int16_t channel9;
+	int16_t channel10;
+	int16_t channel11;
+	int16_t channel12;
+	int16_t channel13;
+	int16_t channel14;
+	int16_t channel15;
+	int16_t channel16;
+	int16_t channel17;
+	int16_t channel18;
 };
 
 typedef union {
-        int16_t data[CHANNELS];
-        struct channels channels;
+	int16_t data[CHANNELS];
+	struct channels channels;
 } ChannelData;
 
 class ArduinoSBUS {
 public:
-        ArduinoSBUS();
-        ArduinoSBUS(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+	ArduinoSBUS();
+	ArduinoSBUS(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #ifdef SoftwareSerial_h
-        ArduinoSBUS(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+	ArduinoSBUS(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #endif
-        ~ArduinoSBUS() {}
-        
-        void begin(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+	~ArduinoSBUS() {}
+	
+	void begin(HardwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #ifdef SoftwareSerial_h
-        void begin(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
+	void begin(SoftwareSerial& serialPort, bool passThrough = false, uint32_t baud = SBUS_BAUD_RATE, bool fastDecode = true);
 #endif
 
-        void attachPassThroughHandler(ChannelData (*callback)(ChannelData data)) {
-                passthrough_handler = callback;
-        }
-        void attachDataReceived(void (*callback)(ChannelData data)) {
-                data_received = callback;
-        }
-        void attachFrameError(void (*callback)()) {
-                frame_error_callback = callback;
-        }
-        void attachFailSafe(void (*callback)()) {
-                failsafe_callback = callback;
-        }
-        void attachRawData(void (*callback)(uint8_t data[PACKET_LENGTH])) {
-                raw_data_callback = callback;
-        }
-        void detachPassThroughHandler() {
-                passthrough_handler = NULL;
-        }
-        void detachDataReceived() {
-                data_received = NULL;
-        }
-        void detachFrameError() {
-                frame_error_callback = NULL;
-        }
-        void detachFailSafe() {
-                failsafe_callback = NULL;
-        }
-        void detachRawData() {
-                raw_data_callback = NULL;
-        }
-        void receive();
-        void send();
-        void passThrough(bool passThrough) {
-                pass_through = passThrough; 
-        }
-        void updateChannels(ChannelData channels, bool frameError = false, bool failSafe = false);
-        ChannelData getChannels();
-        
+	void attachPassThroughHandler(ChannelData (*callback)(ChannelData data)) {
+		passthrough_handler = callback;
+	}
+	void attachDataReceived(void (*callback)(ChannelData data)) {
+		data_received = callback;
+	}
+	void attachFrameError(void (*callback)()) {
+		frame_error_callback = callback;
+	}
+	void attachFailSafe(void (*callback)()) {
+		failsafe_callback = callback;
+	}
+	void attachRawData(void (*callback)(uint8_t data[PACKET_LENGTH])) {
+		raw_data_callback = callback;
+	}
+	void detachPassThroughHandler() {
+		passthrough_handler = NULL;
+	}
+	void detachDataReceived() {
+		data_received = NULL;
+	}
+	void detachFrameError() {
+		frame_error_callback = NULL;
+	}
+	void detachFailSafe() {
+		failsafe_callback = NULL;
+	}
+	void detachRawData() {
+		raw_data_callback = NULL;
+	}
+	bool getFailSafe(){
+		return failsafe;
+	}
+	void receive();
+	void send();
+	void passThrough(bool passThrough) {
+		pass_through = passThrough; 
+	}
+	void updateChannels(ChannelData channels, bool frameError = false, bool failSafe = false);
+	ChannelData getChannels();
+	
 private:
-        bool decode_sbus_data();
+	bool decode_sbus_data();
 
-        Stream *serial;
-        ChannelData channels;
-        uint32_t baud_rate;
-        uint8_t buffer[PACKET_LENGTH];
-        bool pass_through;
-        int offset;
-        bool failsafe;
-        bool frame_error;
-        bool fast_decode;
-        void (*data_received)(ChannelData data);
-        void (*raw_data_callback)(uint8_t data[PACKET_LENGTH]);
-        void (*frame_error_callback)();
-        void (*failsafe_callback)();
-        ChannelData (*passthrough_handler)(ChannelData data);
+	Stream *serial;
+	ChannelData channels;
+	uint32_t baud_rate;
+	uint8_t buffer[PACKET_LENGTH];
+	bool pass_through;
+	int offset;
+	bool failsafe;
+	bool frame_error;
+	bool fast_decode;
+	void (*data_received)(ChannelData data);
+	void (*raw_data_callback)(uint8_t data[PACKET_LENGTH]);
+	void (*frame_error_callback)();
+	void (*failsafe_callback)();
+	ChannelData (*passthrough_handler)(ChannelData data);
 };
 
 #endif
