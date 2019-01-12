@@ -1,15 +1,15 @@
 #include "SBUS.h"
 
 
-ArduinoSBUS::ArduinoSBUS() : serial(NULL), baud_rate(SBUS_BAUD_RATE), pass_through(false), offset(0), failsafe(false), frame_error(false), fast_decode(true), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+ArduinoSBUS::ArduinoSBUS() : serial(NULL), baud_rate(SBUS_BAUD_RATE), pass_through(false), offset(0), failsafe(true), frame_error(false), fast_decode(true), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
 }
 
-ArduinoSBUS::ArduinoSBUS(HardwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+ArduinoSBUS::ArduinoSBUS(HardwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(true), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
 	serialPort.begin(baud_rate, SERIAL_8E2);
 }
 
 #ifdef SoftwareSerial_h
-ArduinoSBUS::ArduinoSBUS(SoftwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(false), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
+ArduinoSBUS::ArduinoSBUS(SoftwareSerial& serialPort, bool passThrough, uint32_t baud, bool fastDecode) : serial(&serialPort), baud_rate(baud), pass_through(passThrough), offset(0), failsafe(true), frame_error(false), fast_decode(fastDecode), data_received(NULL), raw_data_callback(NULL), frame_error_callback(NULL), failsafe_callback(NULL), passthrough_handler(NULL) {
 	serialPort.begin(baud_rate, SERIAL_8E2);
 }
 #endif
@@ -18,7 +18,6 @@ void ArduinoSBUS::begin(HardwareSerial& serialPort, bool passThrough, uint32_t b
 	pass_through = passThrough;
 	baud_rate = baud;
 	fast_decode = fastDecode;
-	
 	serialPort.begin(baud_rate, SERIAL_8E2);
 	serial = &serialPort;
 }
